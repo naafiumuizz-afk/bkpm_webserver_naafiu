@@ -39,7 +39,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="<?= $baseUrl; ?>/mahasiswa" class="btn btn-outline-secondary">Batal</a>
+            <a href="<?= app_url('/mahasiswa'); ?>" class="btn btn-outline-secondary">Batal</a>
         </form>
     </div>
 </div>

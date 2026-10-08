@@ -56,7 +56,7 @@ class AuthController
         $_SESSION = [];
         session_destroy();
         session_start();
-        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Anda telah logout.'];
+        $_SESSION['flash'] = ['type' => 'warning', 'message' => 'Anda telah logout.'];
 
         header('Location: ' . app_url('/login'));
         exit;
