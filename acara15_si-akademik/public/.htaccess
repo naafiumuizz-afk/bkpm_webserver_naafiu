@@ -1,0 +1,6 @@
+RewriteEngine On
+DirectoryIndex api-router.php
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ api-router.php [QSA,L]
