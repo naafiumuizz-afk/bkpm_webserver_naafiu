@@ -1,0 +1,45 @@
+<?php
+
+return [
+    'GET' => [
+        '/' => ['HomeController', 'index'],
+        '/api/mahasiswa' => ['MahasiswaApiController', 'index'],
+        '/api/mahasiswa/{id}' => ['MahasiswaApiController', 'show'],
+        '/api/buku' => ['BukuApiController', 'index'],
+        '/api/buku/{id}' => ['BukuApiController', 'show'],
+        '/login' => ['AuthController', 'loginForm'],
+        '/logout' => ['AuthController', 'logout'],
+        '/dashboard' => ['HomeController', 'dashboard', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/dosen' => ['HomeController', 'dosen', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa' => ['MahasiswaController', 'index', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa/create' => ['MahasiswaController', 'create', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa/edit' => ['MahasiswaController', 'edit', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/prodi' => ['ProdiController', 'index', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/prodi/create' => ['ProdiController', 'create', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/matakuliah' => ['MatakuliahController', 'index', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/matakuliah/create' => ['MatakuliahController', 'create', ['App\\Core\\Middleware\\AuthMiddleware']],
+    ],
+    'POST' => [
+        '/api/mahasiswa' => ['MahasiswaApiController', 'store'],
+        '/api/buku' => ['BukuApiController', 'store'],
+        '/login' => ['AuthController', 'login'],
+        '/mahasiswa' => ['MahasiswaController', 'store', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa/update' => ['MahasiswaController', 'update', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa/delete' => ['MahasiswaController', 'destroy', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/mahasiswa/destroy' => ['MahasiswaController', 'destroy', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/prodi' => ['ProdiController', 'store', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/prodi/update' => ['ProdiController', 'update', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/prodi/destroy' => ['ProdiController', 'destroy', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/matakuliah' => ['MatakuliahController', 'store', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/matakuliah/update' => ['MatakuliahController', 'update', ['App\\Core\\Middleware\\AuthMiddleware']],
+        '/matakuliah/destroy' => ['MatakuliahController', 'destroy', ['App\\Core\\Middleware\\AuthMiddleware']],
+    ],
+    'PUT' => [
+        '/api/mahasiswa/{id}' => ['MahasiswaApiController', 'update'],
+        '/api/buku/{id}' => ['BukuApiController', 'update'],
+    ],
+    'DELETE' => [
+        '/api/mahasiswa/{id}' => ['MahasiswaApiController', 'destroy'],
+        '/api/buku/{id}' => ['BukuApiController', 'destroy'],
+    ],
+];

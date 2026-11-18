@@ -1,0 +1,109 @@
+{
+  "info": {
+    "_postman_id": "60d12d4f-d35d-4f54-89fa-d71e2074a3b7",
+    "name": "Acara 17 - API CRUD MVC",
+    "description": "Pengujian CRUD resource buku melalui Front Controller dan Router MVC.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/bkpm_webserver/acara17_si-akademik/public"
+    },
+    {
+      "key": "buku_id",
+      "value": "1"
+    },
+    {
+      "key": "buku_kode",
+      "value": "BK-001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Buku",
+      "item": [
+        {
+          "name": "GET - Semua buku",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/buku"
+          }
+        },
+        {
+          "name": "GET - Buku berdasarkan ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/buku/{{buku_id}}"
+          }
+        },
+        {
+          "name": "POST - Tambah buku",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kode\": \"BK-{{$timestamp}}\",\n  \"judul\": \"Pemrograman Web\",\n  \"penulis\": \"Andi Saputra\",\n  \"penerbit\": \"Penerbit Kampus\",\n  \"tahun_terbit\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/buku"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.collectionVariables.set('buku_id', body.data.id);",
+                  "pm.collectionVariables.set('buku_kode', body.data.kode);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT - Ubah buku",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kode\": \"{{buku_kode}}\",\n  \"judul\": \"Pemrograman Web Lanjutan\",\n  \"penulis\": \"Andi Saputra\",\n  \"penerbit\": \"Penerbit Kampus\",\n  \"tahun_terbit\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/buku/{{buku_id}}"
+          }
+        },
+        {
+          "name": "DELETE - Hapus buku",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/buku/{{buku_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

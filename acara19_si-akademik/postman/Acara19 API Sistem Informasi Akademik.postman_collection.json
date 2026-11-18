@@ -1,0 +1,189 @@
+{
+  "info": {
+    "_postman_id": "ce51d529-91c3-4f90-870e-49bbd132561c",
+    "name": "API Sistem Informasi Akademik (MVC)",
+    "description": "Pengujian endpoint mahasiswa dan registrasi pengguna Acara 19 melalui Front Controller dan Router MVC.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/bkpm_webserver/acara19_si-akademik"
+    },
+    {
+      "key": "mahasiswa_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Mahasiswa",
+      "item": [
+        {
+          "name": "GET - Semua mahasiswa",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/mahasiswa"
+          }
+        },
+        {
+          "name": "GET - Mahasiswa berdasarkan ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          }
+        },
+        {
+          "name": "POST - Tambah mahasiswa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"25{{$timestamp}}\",\n  \"nama\": \"Rina Putri\",\n  \"email\": \"rina.{{$timestamp}}@example.com\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.collectionVariables.set('mahasiswa_id', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT - Ubah mahasiswa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"25{{$timestamp}}\",\n  \"nama\": \"Rina Putri diperbarui\",\n  \"email\": \"rina.{{$timestamp}}@example.com\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          }
+        },
+        {
+          "name": "DELETE - Hapus mahasiswa",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autentikasi",
+      "item": [
+        {
+          "name": "POST - Registrasi berhasil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user_{{$randomUUID}}\",\n  \"email\": \"user_{{$randomUUID}}@example.com\",\n  \"password\": \"BelajarAcara19!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/register.php"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data).not.to.have.property('password');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST - Email tidak valid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"email_invalid_{{$randomUUID}}\",\n  \"email\": \"email-tidak-valid\",\n  \"password\": \"BelajarAcara19!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/register.php"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 422', function () { pm.response.to.have.status(422); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(false);",
+                  "pm.expect(body.errors).to.have.property('email');"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,8 +6,9 @@ class HomeController
 {
     public function index(): void
     {
-        echo '<h1>Selamat Datang di Sistem Akademik</h1>';
-        echo '<p><a href="' . app_url('/dashboard') . '">Masuk ke dashboard</a></p>';
+        $path = !empty($_SESSION['logged_in']) ? '/dashboard' : '/login';
+        header('Location: ' . app_url($path));
+        exit;
     }
 
     public function dashboard(): void

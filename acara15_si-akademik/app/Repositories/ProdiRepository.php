@@ -19,6 +19,13 @@ class ProdiRepository
         return $statement->fetchColumn() !== false;
     }
 
+    public function firstId(): ?int
+    {
+        $id = $this->connection()->query('SELECT id FROM prodi ORDER BY id LIMIT 1')->fetchColumn();
+
+        return $id === false ? null : (int) $id;
+    }
+
     /** @return list<array{id: int, kode: string, nama: string}> */
     public function all(): array
     {

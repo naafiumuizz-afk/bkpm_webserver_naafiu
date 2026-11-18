@@ -86,18 +86,6 @@ class MahasiswaApiController
         }
 
         $input = get_object_vars($decoded);
-        if (!array_key_exists('prodi_id', $input) || !array_key_exists('angkatan', $input)) {
-            $this->respond(
-                422,
-                false,
-                'Field prodi_id dan angkatan wajib dikirim karena diwajibkan oleh skema database.',
-                null,
-                ['required_fields' => ['nim', 'nama', 'email', 'prodi_id', 'angkatan']]
-            );
-
-            return;
-        }
-
         $result = $this->service->create($input);
         if (!$result['success']) {
             $status = isset($result['errors']['_global']) ? 500 : 422;

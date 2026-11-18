@@ -1,11 +1,11 @@
 # API Data Mahasiswa
 
-Endpoint API tersedia sebagai file mandiri di `api/mahasiswa.php` dan tidak memerlukan login. Dengan proyek berada di `C:\laragon\www\bkpm_webserver\acara15_si-akademik`, URL-nya `http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa.php`.
+Endpoint API tersedia di `api/mahasiswa.php` dan tidak memerlukan login. URL utama sesuai instruksi praktikum adalah `http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa`; URL dengan akhiran `.php` juga tetap dapat digunakan.
 
 ## GET semua mahasiswa
 
 ```http
-GET /bkpm_webserver/acara15_si-akademik/api/mahasiswa.php
+GET /bkpm_webserver/acara15_si-akademik/api/mahasiswa
 ```
 
 Contoh response:
@@ -39,22 +39,20 @@ Kirim request ke `http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasi
 
 ```json
 {
-  "nim": "23004",
+  "nim": "23005",
   "nama": "Dewi",
-  "email": "dewi@gmail.com",
-  "prodi_id": 1,
-  "angkatan": 2026
+  "email": "dewi@gmail.com"
 }
 ```
 
-Tabel mahasiswa pada proyek ini juga mewajibkan `prodi_id` dan `angkatan`; karena itu kedua field tersebut harus disertakan selain tiga field pada contoh tugas. `prodi_id` harus merujuk pada program studi yang sudah ada di database. POST yang berhasil menghasilkan status `201 Created` dan data mahasiswa yang dibuat.
+`prodi_id` dan `angkatan` boleh disertakan untuk menentukan nilai secara eksplisit. Jika tidak disertakan, API menggunakan program studi pertama yang tersedia dan tahun berjalan agar sesuai dengan kolom wajib pada skema database aplikasi. Pastikan database sudah diimpor dan memiliki minimal satu program studi. POST yang berhasil menghasilkan status `201 Created` dan data mahasiswa yang dibuat.
 
 ## Uji dengan cURL
 
 ```sh
-curl http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa.php
-curl "http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa.php?id=1"
-curl -X POST http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa.php ^
+curl http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa
+curl "http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa?id=1"
+curl -X POST http://localhost/bkpm_webserver/acara15_si-akademik/api/mahasiswa ^
   -H "Content-Type: application/json" ^
-  -d "{\"nim\":\"23004\",\"nama\":\"Dewi\",\"email\":\"dewi@gmail.com\",\"prodi_id\":1,\"angkatan\":2026}"
+  -d "{\"nim\":\"23005\",\"nama\":\"Dewi\",\"email\":\"dewi@gmail.com\"}"
 ```

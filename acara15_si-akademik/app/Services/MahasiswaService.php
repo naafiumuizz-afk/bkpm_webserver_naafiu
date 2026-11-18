@@ -24,8 +24,15 @@ class MahasiswaService
     /** @return array{success: bool, message: string, errors: array<string, string>} */
     public function create(array $input): array
     {
-        $data = $this->normalizeInput($input);
         try {
+            if (!array_key_exists('prodi_id', $input)) {
+                $input['prodi_id'] = $this->prodiRepository->firstId() ?? 0;
+            }
+            if (!array_key_exists('angkatan', $input)) {
+                $input['angkatan'] = (int) date('Y');
+            }
+
+            $data = $this->normalizeInput($input);
             $errors = $this->validate($data);
             if ($errors !== []) {
                 return $this->failure($errors);

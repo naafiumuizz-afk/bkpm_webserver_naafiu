@@ -14,7 +14,8 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-body p-0">
-        <table class="table table-striped table-bordered mb-0 align-middle">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered mb-0 align-middle">
             <thead class="table-dark">
                 <tr>
                     <th scope="col">NIM</th>
@@ -47,7 +48,8 @@
                     <tr><td colspan="6" class="text-center py-4">Data mahasiswa tidak ditemukan.</td></tr>
                 <?php endif; ?>
             </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
 

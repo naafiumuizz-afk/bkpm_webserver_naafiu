@@ -69,7 +69,7 @@ try {
     }
 
     $input = get_object_vars($input);
-    foreach (['nim', 'nama', 'email', 'prodi_id', 'angkatan'] as $field) {
+    foreach (['nim', 'nama', 'email'] as $field) {
         if (!isset($input[$field]) || !is_scalar($input[$field]) || trim((string) $input[$field]) === '') {
             $respond(422, false, "Field {$field} wajib diisi.", null);
         }
@@ -78,8 +78,15 @@ try {
     $nim = trim((string) $input['nim']);
     $nama = trim((string) $input['nama']);
     $email = trim((string) $input['email']);
-    $prodiId = filter_var($input['prodi_id'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-    $angkatan = filter_var($input['angkatan'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 2000, 'max_range' => 2100]]);
+    $prodiIdValue = array_key_exists('prodi_id', $input)
+        ? $input['prodi_id']
+        : $pdo->query('SELECT id FROM prodi ORDER BY id LIMIT 1')->fetchColumn();
+    $angkatanValue = $input['angkatan'] ?? (int) date('Y');
+    $prodiId = filter_var($prodiIdValue, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $angkatan = filter_var($angkatanValue, FILTER_VALIDATE_INT, ['options' => ['min_range' => 2000, 'max_range' => 2100]]);
+    if ($prodiId === false) {
+        $respond(422, false, 'Program studi belum tersedia. Tambahkan data prodi terlebih dahulu.', null);
+    }
     if (!ctype_digit($nim) || strlen($nim) > 20 || strlen($nama) > 100 || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100 || $prodiId === false || $angkatan === false) {
         $respond(422, false, 'Data mahasiswa tidak valid.', null);
     }
