@@ -1,0 +1,299 @@
+{
+  "info": {
+    "_postman_id": "d26efaa2-39c3-4845-9d9a-559999f25828",
+    "name": "Acara 28 - Production Testing",
+    "description": "Pengujian API mahasiswa pada hosting Rumahweb. Base URL disesuaikan dengan routing yang aktif: https://alwiyaa.my.id/Naafiu. GET dapat diuji tanpa token. Login diperlukan sebelum POST, PUT, dan DELETE; operasi tersebut mengubah data hosting. Jalankan POST -> PUT -> DELETE hanya untuk menguji data mahasiswa yang dibuat oleh POST di collection ini.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "username",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mahasiswa_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_mahasiswa_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "prodi_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "test_nim",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_email",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Baca data (GET, tanpa token)",
+      "item": [
+        {
+          "name": "GET - Semua mahasiswa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/mahasiswa",
+            "description": "Aman untuk dijalankan berulang kali. Menyimpan ID data pertama ke collection variable mahasiswa_id untuk request detail."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data).to.be.an('array');",
+                  "if (body.data.length > 0) { pm.collectionVariables.set('mahasiswa_id', String(body.data[0].id)); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET - Mahasiswa berdasarkan ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}",
+            "description": "Jalankan setelah GET - Semua mahasiswa agar mahasiswa_id terisi."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data).to.be.an('object');"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Autentikasi API",
+      "item": [
+        {
+          "name": "POST - Login admin (token berlaku 5 menit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/login.php",
+            "description": "Isi variable username dan password dengan akun admin Anda di Postman. Password tidak disimpan dalam file ini. Token login otomatis disimpan pada jwt_token."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.role).to.eql('admin');",
+                  "pm.expect(body.data.token).to.be.a('string');",
+                  "pm.collectionVariables.set('jwt_token', body.data.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. CRUD mahasiswa (mengubah data hosting)",
+      "description": "Semua request di bagian ini memerlukan token admin. POST membuat satu data uji; jalankan PUT lalu DELETE dengan test_mahasiswa_id yang otomatis disimpan oleh POST untuk memperbarui dan menghapus hanya data uji tersebut. Jangan kirim DELETE dengan ID data lain.",
+      "item": [
+        {
+          "name": "POST - Tambah mahasiswa uji",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"{{test_nim}}\",\n  \"nama\": \"Mahasiswa Uji Acara 28\",\n  \"email\": \"{{test_email}}\",\n  \"prodi_id\": {{prodi_id}},\n  \"angkatan\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa",
+            "description": "Sebelum dikirim, cari prodi_id yang valid bila ID default 1 tidak tersedia. Request ini membuat satu baris data baru di database hosting."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = Date.now().toString();",
+                  "pm.collectionVariables.set('test_nim', '28' + suffix.slice(-10));",
+                  "pm.collectionVariables.set('test_email', 'uji-acara28-' + suffix + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.id).to.exist;",
+                  "pm.collectionVariables.set('test_mahasiswa_id', String(body.data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT - Ubah mahasiswa uji",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"{{test_nim}}\",\n  \"nama\": \"Mahasiswa Uji Acara 28 Diperbarui\",\n  \"email\": \"{{test_email}}\",\n  \"prodi_id\": {{prodi_id}},\n  \"angkatan\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa/{{test_mahasiswa_id}}",
+            "description": "Jalankan hanya setelah POST sukses; menggunakan ID yang disimpan dari respons POST."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.expect(pm.response.json().success).to.eql(true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE - Hapus mahasiswa uji",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/mahasiswa/{{test_mahasiswa_id}}",
+            "description": "Jalankan hanya setelah POST sukses; menghapus data uji yang dibuat oleh collection ini."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.expect(pm.response.json().success).to.eql(true);",
+                  "pm.collectionVariables.unset('test_mahasiswa_id');"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

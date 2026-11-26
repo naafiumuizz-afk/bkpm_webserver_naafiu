@@ -1,0 +1,4 @@
+[2026-11-22 23:14:40] Web gagal mencari pengguna untuk login: PDOException: Koneksi database gagal: SQLSTATE[HY000] [1045] Access denied for user 'alwa9136_naafiu'@'localhost' (using password: YES)
+[2026-11-22 23:16:36] Web gagal mencari pengguna untuk login: PDOException: Koneksi database gagal: SQLSTATE[HY000] [1045] Access denied for user 'alwa9136_naafiu'@'localhost' (using password: YES)
+[2026-11-22 23:18:48] Web gagal mencari pengguna untuk login: PDOException: Koneksi database gagal: SQLSTATE[HY000] [1045] Access denied for user 'alwa9136_naafiu'@'localhost' (using password: YES)
+[2026-11-22 23:22:13] Web gagal mencari pengguna untuk login: PDOException: Koneksi database gagal: SQLSTATE[HY000] [1045] Access denied for user 'alwa9136_naafiu'@'localhost' (using password: YES)

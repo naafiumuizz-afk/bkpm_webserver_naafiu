@@ -1,0 +1,479 @@
+{
+  "info": {
+    "_postman_id": "d85cbb25-8d35-4f48-9940-52de130d9025",
+    "name": "Acara 25 - Authentication, Authorization, dan RBAC",
+    "description": "Pengujian registrasi, login JWT, dan pembatasan akses user/admin untuk API SI Akademik. Registrasi membuat role user; ubah role akun admin di database sebelum menjalankan login admin.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/bkpm_webserver/acara25_si-akademik"
+    },
+    {
+      "key": "user_username",
+      "value": ""
+    },
+    {
+      "key": "user_email",
+      "value": ""
+    },
+    {
+      "key": "user_password",
+      "value": "UjiAcara25!"
+    },
+    {
+      "key": "admin_username",
+      "value": ""
+    },
+    {
+      "key": "admin_email",
+      "value": ""
+    },
+    {
+      "key": "admin_password",
+      "value": "UjiAcara25!"
+    },
+    {
+      "key": "jwt_user_token",
+      "value": ""
+    },
+    {
+      "key": "jwt_admin_token",
+      "value": ""
+    },
+    {
+      "key": "mahasiswa_id",
+      "value": "1"
+    },
+    {
+      "key": "mahasiswa_nim",
+      "value": ""
+    },
+    {
+      "key": "mahasiswa_email",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Registrasi akun",
+      "description": "Jalankan kedua request ini satu kali. Akun admin yang didaftarkan juga ber-role user pada awalnya. Setelah registrasi admin berhasil, ubah role akun tersebut menjadi admin di database sebelum menjalankan folder 3.",
+      "item": [
+        {
+          "name": "POST Daftarkan akun user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{user_username}}\",\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/register.php",
+            "description": "Membuat akun user uji dengan nama/email unik. Username dan email otomatis disimpan ke collection variables agar bisa dipakai oleh request login user."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = pm.variables.replaceIn('{{$randomUUID}}').replace(/-/g, '').slice(0, 8);",
+                  "pm.collectionVariables.set('user_username', 'uji_user25_' + suffix);",
+                  "pm.collectionVariables.set('user_email', 'uji_user25_' + suffix + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registrasi user: status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.username).to.eql(pm.collectionVariables.get('user_username'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Daftarkan akun admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/register.php",
+            "description": "Registrasi ini membuat akun ber-role user. Setelah respons 201, buka database si_akademik, tabel users, cari username dari respons, lalu ubah kolom role akun ini menjadi admin. Jangan ubah password."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = pm.variables.replaceIn('{{$randomUUID}}').replace(/-/g, '').slice(0, 8);",
+                  "pm.collectionVariables.set('admin_username', 'uji_admin25_' + suffix);",
+                  "pm.collectionVariables.set('admin_email', 'uji_admin25_' + suffix + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registrasi akun admin: status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.username).to.eql(pm.collectionVariables.get('admin_username'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Uji role user (harus 403)",
+      "description": "Jalankan login user terlebih dahulu. Semua request perubahan data harus mengembalikan 403 Forbidden untuk token dengan role user.",
+      "item": [
+        {
+          "name": "POST Login sebagai user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{user_username}}\",\n  \"password\": \"{{user_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/login.php"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login user: status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.role).to.eql('user');",
+                  "pm.expect(body.data.token).to.be.a('string');",
+                  "pm.collectionVariables.set('jwt_user_token', body.data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST User - tambah mahasiswa (harus 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"2599991\",\n  \"nama\": \"Uji Ditolak User\",\n  \"email\": \"uji-ditolak-user@example.com\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tambah oleh user ditolak: status 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT User - ubah mahasiswa (harus 403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"2599991\",\n  \"nama\": \"Percobaan Ubah oleh User\",\n  \"email\": \"uji-ditolak-user@example.com\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Ubah oleh user ditolak: status 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DEL User - hapus mahasiswa (harus 403)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_user_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Hapus oleh user ditolak: status 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Uji role admin (harus berhasil)",
+      "description": "Jalankan setelah akun admin sudah diubah menjadi role admin di database. Tambah, ubah, lalu hapus hanya data mahasiswa uji yang dibuat oleh request ini.",
+      "item": [
+        {
+          "name": "POST Login sebagai admin (jalankan setelah role diubah di database)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/login.php"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login admin: status 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.expect(body.data.role).to.eql('admin');",
+                  "pm.expect(body.data.token).to.be.a('string');",
+                  "pm.collectionVariables.set('jwt_admin_token', body.data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Admin - tambah mahasiswa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"{{mahasiswa_nim}}\",\n  \"nama\": \"Mahasiswa Uji Acara 25\",\n  \"email\": \"{{mahasiswa_email}}\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa",
+            "description": "Membuat data uji, menyimpan ID, NIM, dan email untuk request ubah dan hapus berikutnya."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = Date.now().toString();",
+                  "pm.collectionVariables.set('mahasiswa_nim', '25' + suffix);",
+                  "pm.collectionVariables.set('mahasiswa_email', 'uji-acara25-' + suffix + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tambah oleh admin: status 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.expect(body.success).to.eql(true);",
+                  "pm.collectionVariables.set('mahasiswa_id', String(body.data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Admin - ubah mahasiswa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nim\": \"{{mahasiswa_nim}}\",\n  \"nama\": \"Mahasiswa Uji Acara 25 Diperbarui\",\n  \"email\": \"{{mahasiswa_email}}\",\n  \"prodi_id\": 1,\n  \"angkatan\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Ubah oleh admin: status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.expect(pm.response.json().success).to.eql(true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DEL Admin - hapus mahasiswa",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_admin_token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/mahasiswa/{{mahasiswa_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Hapus oleh admin: status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.expect(pm.response.json().success).to.eql(true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

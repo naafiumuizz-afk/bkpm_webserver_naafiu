@@ -16,31 +16,4 @@
             </div>
         </a>
     </div>
-    <div class="col-sm-6 col-lg-3">
-        <a href="<?= app_url('/prodi'); ?>" class="card h-100 border-0 shadow-sm text-decoration-none">
-            <div class="card-body">
-                <p class="text-success fw-bold small mb-2">DATA AKADEMIK</p>
-                <h2 class="h5 text-dark mb-2">Program Studi</h2>
-                <p class="text-secondary small mb-0">Kelola program studi.</p>
-            </div>
-        </a>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-        <a href="<?= app_url('/matakuliah'); ?>" class="card h-100 border-0 shadow-sm text-decoration-none">
-            <div class="card-body">
-                <p class="text-info fw-bold small mb-2">DATA AKADEMIK</p>
-                <h2 class="h5 text-dark mb-2">Mata Kuliah</h2>
-                <p class="text-secondary small mb-0">Kelola mata kuliah.</p>
-            </div>
-        </a>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-        <a href="<?= app_url('/dosen'); ?>" class="card h-100 border-0 shadow-sm text-decoration-none">
-            <div class="card-body">
-                <p class="text-warning fw-bold small mb-2">DATA AKADEMIK</p>
-                <h2 class="h5 text-dark mb-2">Dosen</h2>
-                <p class="text-secondary small mb-0">Kelola data dosen.</p>
-            </div>
-        </a>
-    </div>
 </div>

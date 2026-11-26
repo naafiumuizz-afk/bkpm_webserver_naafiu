@@ -20,7 +20,7 @@
         <section class="card metric-card h-100 rounded-3 border-top border-4 border-success">
             <div class="card-body p-3">
                 <div class="small text-secondary mb-2">Hasil Ditampilkan</div>
-                <div class="metric-value fs-2 fw-bold"><?= (int) $total; ?></div>
+                <div class="metric-value fs-2 fw-bold"><?= count($mahasiswa); ?></div>
                 <div class="small text-secondary">Menyesuaikan kata pencarian</div>
             </div>
         </section>
@@ -55,7 +55,8 @@
                     <th scope="col" class="ps-4">No.</th>
                     <th scope="col">NIM</th>
                     <th scope="col">Mahasiswa</th>
-                    <th scope="col">Email</th>
+                    <th scope="col">Angkatan</th>
+                    <th scope="col">Prodi</th>
                     <th scope="col">Status</th>
                 </tr>
             </thead>
@@ -71,13 +72,14 @@
                                 <span><?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
                         </td>
-                        <td class="text-secondary"><?= htmlspecialchars($item->getEmail(), ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?= htmlspecialchars($item->getAngkatan(), ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?= htmlspecialchars($item->getProdi(), ENT_QUOTES, 'UTF-8'); ?></td>
                         <td><?= htmlspecialchars($item->getStatus(), ENT_QUOTES, 'UTF-8'); ?></td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if ($mahasiswa === []): ?>
                     <tr>
-                        <td colspan="5" class="text-center text-secondary py-5">
+                        <td colspan="6" class="text-center text-secondary py-5">
                             <?= $search !== '' ? 'Tidak ada mahasiswa yang cocok dengan pencarian.' : 'Belum ada data mahasiswa.'; ?>
                         </td>
                     </tr>

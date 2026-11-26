@@ -1,0 +1,401 @@
+
+openapi: 3.0.0
+
+info:
+  title: API Sistem Informasi Akademik
+  version: 1.0.0
+  description: |
+    Dokumentasi REST API Sistem Informasi Akademik.
+    API digunakan untuk mengelola autentikasi pengguna,
+    data mahasiswa, dan data buku.
+
+
+servers:
+  - url: https://alwiyaa.my.id/Naafiu
+    description: Server produksi (HTTPS)
+
+tags:
+  - name: Autentikasi
+    description: Registrasi dan login pengguna
+
+  - name: Mahasiswa
+    description: Pengelolaan data mahasiswa
+
+  - name: Buku
+    description: Pengelolaan data buku
+
+paths:
+
+  # =========================
+  # AUTENTIKASI
+  # =========================
+
+  /api/login:
+    post:
+      tags:
+        - Autentikasi
+      summary: Autentikasi pengguna dan memperoleh token
+      operationId: apiLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login berhasil
+        '400':
+          description: Body JSON tidak valid
+        '401':
+          description: Username atau password salah
+        '415':
+          description: Content-Type harus application/json
+        '422':
+          description: Username dan password wajib diisi
+        '500':
+          description: Gangguan server
+
+  /register:
+    post:
+      tags:
+        - Autentikasi
+      summary: Mendaftarkan pengguna baru
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registrasi berhasil
+        '400':
+          description: Body JSON tidak valid
+        '409':
+          description: Username atau email sudah terdaftar
+        '415':
+          description: Content-Type harus application/json
+        '422':
+          description: Data registrasi tidak valid
+        '500':
+          description: Gangguan server
+
+  # =========================
+  # MAHASISWA
+  # =========================
+
+  /api/mahasiswa:
+    get:
+      tags:
+        - Mahasiswa
+      summary: Mengambil data mahasiswa
+      operationId: listMahasiswa
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: Mengambil satu mahasiswa berdasarkan ID jika disertakan
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Data berhasil diambil
+        '400':
+          description: ID harus berupa bilangan positif
+        '404':
+          description: Mahasiswa tidak ditemukan
+        '500':
+          description: Gangguan server
+
+    post:
+      tags:
+        - Mahasiswa
+      summary: Menambahkan data mahasiswa
+      operationId: createMahasiswa
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MahasiswaInput'
+      responses:
+        '201':
+          description: Data berhasil ditambahkan
+        '400':
+          description: Body JSON tidak valid
+        '401':
+          description: Token tidak valid atau tidak tersedia
+        '415':
+          description: Content-Type harus application/json
+        '422':
+          description: Data mahasiswa tidak valid
+        '500':
+          description: Gangguan server
+
+  /api/mahasiswa/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID mahasiswa berupa bilangan positif
+        schema:
+          type: integer
+          minimum: 1
+
+    get:
+      tags:
+        - Mahasiswa
+      summary: Mengambil data mahasiswa berdasarkan ID
+      operationId: getMahasiswa
+      responses:
+        '200':
+          description: Data berhasil diambil
+        '404':
+          description: Mahasiswa tidak ditemukan
+        '500':
+          description: Gangguan server
+
+    put:
+      tags:
+        - Mahasiswa
+      summary: Memperbarui data mahasiswa
+      operationId: updateMahasiswa
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MahasiswaInput'
+      responses:
+        '200':
+          description: Data berhasil diperbarui
+        '400':
+          description: Body JSON tidak valid
+        '401':
+          description: Token tidak valid atau tidak tersedia
+        '404':
+          description: Mahasiswa tidak ditemukan
+        '415':
+          description: Content-Type harus application/json
+        '422':
+          description: Data mahasiswa tidak valid
+        '500':
+          description: Gangguan server
+
+    delete:
+      tags:
+        - Mahasiswa
+      summary: Menghapus data mahasiswa
+      operationId: deleteMahasiswa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Data berhasil dihapus
+        '401':
+          description: Token tidak valid atau tidak tersedia
+        '404':
+          description: Mahasiswa tidak ditemukan
+        '500':
+          description: Gangguan server
+
+  # =========================
+  # BUKU
+  # =========================
+
+  /api/buku:
+    get:
+      tags:
+        - Buku
+      summary: Mengambil seluruh data buku
+      operationId: listBuku
+      responses:
+        '200':
+          description: Data buku berhasil diambil
+        '500':
+          description: Gangguan server
+
+    post:
+      tags:
+        - Buku
+      summary: Menambahkan data buku
+      operationId: createBuku
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BukuInput'
+      responses:
+        '201':
+          description: Data buku berhasil ditambahkan
+        '422':
+          description: Data buku tidak valid
+        '500':
+          description: Gangguan server
+
+  /api/buku/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID buku berupa bilangan positif
+        schema:
+          type: integer
+          minimum: 1
+
+    get:
+      tags:
+        - Buku
+      summary: Mengambil data buku berdasarkan ID
+      operationId: getBuku
+      responses:
+        '200':
+          description: Data buku berhasil diambil
+        '404':
+          description: Buku tidak ditemukan
+        '500':
+          description: Gangguan server
+
+    put:
+      tags:
+        - Buku
+      summary: Memperbarui data buku
+      operationId: updateBuku
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BukuInput'
+      responses:
+        '200':
+          description: Data buku berhasil diperbarui
+        '404':
+          description: Buku tidak ditemukan
+        '422':
+          description: Data buku tidak valid
+        '500':
+          description: Gangguan server
+
+    delete:
+      tags:
+        - Buku
+      summary: Menghapus data buku
+      operationId: deleteBuku
+      responses:
+        '200':
+          description: Data buku berhasil dihapus
+        '404':
+          description: Buku tidak ditemukan
+        '500':
+          description: Gangguan server
+
+# =========================
+# KOMPONEN DAN AUTENTIKASI
+# =========================
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Masukkan token JWT hasil login.
+
+  schemas:
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: mahasiswa
+        password:
+          type: string
+          format: password
+          example: kata-sandi
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          maxLength: 50
+          example: mahasiswa
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: mahasiswa@example.com
+        password:
+          type: string
+          format: password
+          example: kata-sandi
+
+    MahasiswaInput:
+      type: object
+      required:
+        - nim
+        - nama
+        - email
+        - prodi_id
+        - angkatan
+      properties:
+        nim:
+          type: string
+          example: '2501001'
+        nama:
+          type: string
+          example: Rina Putri
+        email:
+          type: string
+          format: email
+          example: rina@example.com
+        prodi_id:
+          type: integer
+          minimum: 1
+          example: 1
+        angkatan:
+          type: integer
+          example: 2025
+
+    BukuInput:
+      type: object
+      required:
+        - kode
+        - judul
+        - penulis
+        - penerbit
+        - tahun_terbit
+      properties:
+        kode:
+          type: string
+          example: BK-001
+        judul:
+          type: string
+          example: Pemrograman Web
+        penulis:
+          type: string
+          example: Andi Saputra
+        penerbit:
+          type: string
+          example: Penerbit Kampus
+        tahun_terbit:
+          type: integer
+          example: 2025

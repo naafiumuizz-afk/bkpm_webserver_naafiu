@@ -42,12 +42,6 @@ $baseUrl = $baseUrl ?? rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/'), '/');
                 <li class="nav-item">
                     <a class="nav-link" href="<?= app_url('/dashboard'); ?>">Mahasiswa</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= app_url('/prodi'); ?>">Program Studi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= app_url('/matakuliah'); ?>">Mata Kuliah</a>
-                </li>
                 <li class="nav-item ms-lg-2">
                     <a class="btn btn-sm btn-outline-light" href="<?= app_url('/logout'); ?>">Logout</a>
                 </li>

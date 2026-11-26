@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Data Mahasiswa | SI Akademik</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --akademik-ink: #17324d;
+            --akademik-primary: #176b5b;
+            --akademik-surface: #f3f7f8;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--akademik-surface);
+            color: var(--akademik-ink);
+        }
+
+        .site-nav {
+            background: linear-gradient(110deg, #102a43, #176b5b);
+        }
+
+        .brand-mark {
+            width: 2.25rem;
+            height: 2.25rem;
+            display: inline-grid;
+            place-items: center;
+            border-radius: .7rem;
+            background: rgba(255, 255, 255, .16);
+            font-weight: 700;
+        }
+
+        .page-heading {
+            background: linear-gradient(120deg, #e1f3ed, #edf5fb);
+            border: 1px solid #dcebe7;
+        }
+
+        .metric-card {
+            border: 0;
+            box-shadow: 0 .25rem 1rem rgba(23, 50, 77, .07);
+        }
+
+        .metric-value {
+            color: var(--akademik-primary);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 25rem;
+        }
+
+        .student-avatar {
+            width: 2.35rem;
+            height: 2.35rem;
+            display: inline-grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: #e1f3ed;
+            color: var(--akademik-primary);
+            font-weight: 700;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark site-nav">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <span class="brand-mark" aria-hidden="true">S</span>
+                <span>SI Akademik</span>
+            </a>
+            <span class="badge rounded-pill text-bg-light text-success">Data Mahasiswa</span>
+        </div>
+    </nav>
+
+    <main class="container py-4 py-lg-5">
+        <section class="page-heading rounded-4 p-3 p-lg-4 mb-3">
+            <p class="text-uppercase text-success small fw-bold mb-2">Portal Akademik</p>
+            <h1 class="h2 fw-bold mb-2">Data Mahasiswa</h1>
+            <p class="text-secondary mb-0">Informasi mahasiswa tersaji dalam satu daftar yang mudah dicari.</p>
+        </section>
+
+        <div class="row row-cols-1 row-cols-sm-2 g-3 mb-4">
+            <div class="col">
+                <section class="card metric-card h-100 rounded-3 border-top border-4 border-primary">
+                    <div class="card-body p-3">
+                        <div class="small text-secondary mb-2">Total Mahasiswa</div>
+                        <div id="total-mahasiswa" class="metric-value fs-2 fw-bold">-</div>
+                        <div class="small text-secondary">Data yang diterima dari API</div>
+                    </div>
+                </section>
+            </div>
+            <div class="col">
+                <section class="card metric-card h-100 rounded-3 border-top border-4 border-success">
+                    <div class="card-body p-3">
+                        <div class="small text-secondary mb-2">Hasil Ditampilkan</div>
+                        <div id="hasil-ditampilkan" class="metric-value fs-2 fw-bold">-</div>
+                        <div class="small text-secondary">Menyesuaikan kata pencarian</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div id="status" class="alert alert-info" role="status" aria-live="polite">Memuat data mahasiswa...</div>
+
+        <section class="card border-0 rounded-4 shadow-sm overflow-hidden">
+            <div class="card-header bg-white border-0 p-3 p-lg-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h2 class="h4 mb-1">Daftar Mahasiswa</h2>
+                        <p class="text-secondary small mb-0">Cari berdasarkan NIM, nama, atau email.</p>
+                    </div>
+                    <div class="input-group search-box">
+                        <input id="filter-mahasiswa" class="form-control" type="search" placeholder="Cari mahasiswa..." aria-label="Cari berdasarkan NIM, nama, atau email">
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="tabel-mahasiswa" class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" class="ps-4">No.</th>
+                            <th scope="col">NIM</th>
+                            <th scope="col">Mahasiswa</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white border-0 px-3 px-lg-4 py-3">
+                <small id="jumlah-mahasiswa" class="text-secondary">Menunggu data...</small>
+            </div>
+        </section>
+
+        <footer class="text-center text-secondary small mt-4">
+            Data dimuat langsung dari API menggunakan Fetch.
+        </footer>
+    </main>
+
+    <script src="app.js?v=4"></script>
+</body>
+</html>

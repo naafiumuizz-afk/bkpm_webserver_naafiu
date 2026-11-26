@@ -1,0 +1,7 @@
+RewriteEngine On
+
+RewriteRule ^$ ../login [R=302,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ ../router-entry.php [QSA,L]
